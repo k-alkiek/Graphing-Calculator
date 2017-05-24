@@ -9,13 +9,33 @@
 	<body>
 		<h1 class="text-center">Graphing Calculator</h1>
 
+		<div class="container-fluid">
 
-		<div class="container">
-			<input type="number" name="" id="input" class="form-control" value="" min="{5"} max="" step="" required="required" title="">
-		</div>
-		<br>
-		<div class="container text-center">
-			<canvas id="graphCanvas" width="1100" height="700"></canvas>	
+			<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+				<div class="container-fluid">
+					<label for="input-id">Equation</label>
+					<input type="text" id="equation" class="form-control" required="required"  value="1/(x*x+1)*10*Math.sin(x*3)" onChange="readParams()">
+
+					<label for="input-id">Step</label>
+					<input type="number" id="step" class="form-control" required="required" value="1"  onChange="readParams()">
+
+					<label for="input-id">X Shift</label>
+					<input type="number" id="xShift" class="form-control" required="required" value="0" onChange="readParams()">
+
+					<label for="input-id">Y Shift</label>
+					<input type="number" id="yShift" class="form-control" required="required" value="0" onChange="readParams()">
+					<br>
+					<button type="button" class="btn btn-default" onClick="readParams()">Update</button>
+				</div>
+				<br>
+			</div>
+
+			<div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+				<div class="container text-center">
+					<canvas id="graphCanvas" width="1100" height="700"></canvas>	
+				</div>
+			</div>
+
 		</div>
 
 		<script src="graph.js"></script>

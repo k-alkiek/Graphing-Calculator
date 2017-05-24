@@ -14,30 +14,62 @@ var yShift;
 var xShiftPixels;
 var yShiftPixels;
 
+var expression;
+
+var lineColor = "purple"
 
 initialize();
 
 function initialize() {
-	scale = 60;
+	scale = 50;
 	step = 1;
 
 	xAxisYPos;
 	yAxisXPos;
 
-	xShift = 1;
-	yShift = -1;
+	xShift = 0;
+	yShift = 0;
 
 	xShiftPixels = scale * xShift;
 	yShiftPixels = scale * yShift;
-	draw();
+
+	expression = "1/(x*x+1)*10*Math.sin(x*3)"
+
+	draw(expression);
 }
 
-function draw() {
+
+function draw(expression) {
 
 	drawVerticals();
 	drawHorizontals();
 	writeXAxisNumbers();
-	writeYAxisNumbers()
+	writeYAxisNumbers();
+
+	plot(expression);
+}
+
+function clear() {
+	c.clearRect(0, 0, graph.width, graph.height);
+}
+
+function readParams() {
+	var stepInput = document.getElementById("step").value;
+	step = stepInput == 0? 1 : stepInput;
+
+	var xShiftInput = document.getElementById("xShift").value;
+	xShift = xShiftInput;
+
+	var yShiftInput = document.getElementById("yShift").value;
+	yShift = yShiftInput;
+
+	xShiftPixels = scale * xShift;
+	yShiftPixels = scale * yShift;
+
+	var expression = document.getElementById("equation").value;
+
+	clear();
+	draw(expression);
 }
 
 function drawVerticals() {
@@ -81,6 +113,7 @@ function drawHorizontals() {
 		c.stroke(); // Draw it
 	}
 }
+
 
 /*
  *Prints the numbers on the x axis.
@@ -133,6 +166,11 @@ function writeXAxisNumbers() {
 }
 
 
+/*
+ *Prints the numbers on the y axis.
+ *Starts first by drawing the positive part
+ *then draws the negative part
+ */
 function writeYAxisNumbers() {
 	c.font="20px Aerial";
 
@@ -142,7 +180,7 @@ function writeYAxisNumbers() {
 
 	var j, yPos;
 
-	//The positive part of the x axis
+	//The negative part of the y axis
 	j = -1;
 	yPos =  originYPos + scale;
 	while (yPos < graph.height) {
@@ -159,7 +197,7 @@ function writeYAxisNumbers() {
 		j--;
 	}
 
-	//The negative part of the x axis
+	//The positive part of the y axis
 	j = 1;
 	yPos =  originYPos - scale;
 	while (yPos > 0) {
@@ -178,40 +216,22 @@ function writeYAxisNumbers() {
 
 }
 
-// function writeYAxisNumbers() {
-// 	c.font="20px Aerial";
-// 	var originXPos = yAxisXPos;
-// 	var originYPos = xAxisYPos;
 
+function plot(expression) {
+	eval("var eqn = function(x) {return " + expression + ";}")
 
-// 	for (var j=1; (j)*scale <graph.height/2; j++) {
-// 		//draw the negative value
-// 		var negativeYPos =  originYPos + j*scale
+	interval = 0.1;
+	var xPos = yAxisXPos;
+	var yPos = xAxisYPos;
 
-// 		if (negativeYPos > 0 && negativeYPos < graph.height) {
-// 			c.beginPath();
-// 			c.strokeStyle="black";
-// 			c.lineWidth = 2;
-// 			c.moveTo(originXPos, negativeYPos);
-// 			c.lineTo(originXPos - scale/8, negativeYPos);
-// 			c.stroke();
+	c.fillStyle = lineColor;
 
-// 			c.fillText(-j*step, originXPos - 2*scale/3, negativeYPos + scale/3);
-// 		}
-
-// 		//draw the positive value
-// 		var positiveYPos =  originYPos - j*scale
-
-// 		if (positiveYPos > 0 && positiveYPos < graph.height) {
-// 			c.beginPath();
-// 			c.strokeStyle="black";
-// 			c.lineWidth = 2;
-// 			c.moveTo(originXPos, positiveYPos);
-// 			c.lineTo(originXPos - scale/8, positiveYPos);
-// 			c.stroke();
-
-// 			c.fillText(j*step, originXPos - 2*scale/3, positiveYPos + scale/3);
-// 		}	
-// 	}
-
-// }
+	for (var i=0; i<graph.width; i+=interval) {
+		var x = i/scale*step
+		c.fillRect(xPos+i, yPos-eqn(x)/step*scale, 2, 2)
+	}
+	for (var i=0; i<graph.width; i+=interval) {
+		var x = -i/scale*step
+		c.fillRect(xPos-i, yPos-eqn(x)/step*scale, 2, 2)
+	}
+}
