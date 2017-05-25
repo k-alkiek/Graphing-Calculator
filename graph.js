@@ -33,7 +33,7 @@ function initialize() {
 	xShiftPixels = scale * xShift;
 	yShiftPixels = scale * yShift;
 
-	expression = "1/(x*x+1)*10*Math.sin(x*3)"
+	expression = "1/(x*x+1)*10*Math.sin(x*2)"	//default expression to plot
 
 	draw(expression);
 }
@@ -191,7 +191,7 @@ function writeYAxisNumbers() {
 		c.lineTo(originXPos - scale/8, yPos);
 		c.stroke();
 
-		c.fillText(j*step, originXPos - scale/2, yPos + scale/8);
+		c.fillText(j*step, originXPos - 3*scale/4, yPos + scale/8);
 
 		yPos += scale;
 		j--;
@@ -208,7 +208,7 @@ function writeYAxisNumbers() {
 		c.lineTo(originXPos - scale/8, yPos);
 		c.stroke();
 
-		c.fillText(j*step, originXPos - scale/2, yPos + scale/8);
+		c.fillText(j*step, originXPos - 2*scale/3, yPos + scale/8);
 
 		yPos -= scale;
 		j++;
@@ -220,18 +220,45 @@ function writeYAxisNumbers() {
 function plot(expression) {
 	eval("var eqn = function(x) {return " + expression + ";}")
 
-	interval = 0.1;
+	interval = 1;
 	var xPos = yAxisXPos;
 	var yPos = xAxisYPos;
 
 	c.fillStyle = lineColor;
 
-	for (var i=0; i<graph.width; i+=interval) {
-		var x = i/scale*step
-		c.fillRect(xPos+i, yPos-eqn(x)/step*scale, 2, 2)
+	for (var i=0, xPos1=xPos, yPos1=yPos; i<graph.width-1; i+=interval) {
+		var x = i/scale*step;				//Algebric value of x
+		var y = eqn(x);						//Algebric value of y
+
+		var xPos2 = xPos + i;				//X position in pixels
+		var yPos2 = yPos - y/step*scale;	//Y poisition in pixels
+
+		drawLine(xPos1, yPos1, xPos2, yPos2);
+
+		xPos1 = xPos2;
+		yPos1 = yPos2;
+
+		//c.fillRect(xPos+i, yPos-eqn(x)/step*scale, 2, 2)
 	}
-	for (var i=0; i<graph.width; i+=interval) {
-		var x = -i/scale*step
-		c.fillRect(xPos-i, yPos-eqn(x)/step*scale, 2, 2)
+	for (var i=0, xPos1=xPos, yPos1=yPos; i<graph.width-1; i+=interval) {
+		var x = -i/scale*step;				//Algebric value of x
+		var y = eqn(x);						//Algebric value of y
+
+		var xPos2 = xPos - i;				//X position in pixels
+		var yPos2 = yPos - y/step*scale;	//Y poisition in pixels
+
+		drawLine(xPos1, yPos1, xPos2, yPos2);
+
+		xPos1 = xPos2;
+		yPos1 = yPos2;
 	}
+}
+
+function drawLine(x1, y1, x2, y2) {
+		c.beginPath();
+		c.strokeStyle=lineColor;
+		c.lineWidth = 2;
+		c.moveTo(x1, y1);
+		c.lineTo(x2, y2);
+		c.stroke();
 }
